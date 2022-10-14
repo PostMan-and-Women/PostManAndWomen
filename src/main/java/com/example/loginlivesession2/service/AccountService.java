@@ -1,6 +1,7 @@
 package com.example.loginlivesession2.service;
 
 import com.example.loginlivesession2.dto.AccountReqDto;
+import com.example.loginlivesession2.dto.AccountRequestDto;
 import com.example.loginlivesession2.dto.LoginReqDto;
 import com.example.loginlivesession2.entity.Account;
 import com.example.loginlivesession2.entity.RefreshToken;
@@ -30,7 +31,7 @@ public class AccountService {
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional
-    public GlobalResDto signup(AccountReqDto accountReqDto) {
+    public GlobalResDto signup(AccountRequestDto accountReqDto) {
 
         // email 중복 검사
         if(accountRepository.findByEmail(accountReqDto.getEmail()).isPresent()){
