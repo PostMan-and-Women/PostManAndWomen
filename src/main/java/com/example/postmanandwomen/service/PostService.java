@@ -1,21 +1,25 @@
 package com.example.postmanandwomen.service;
 
-import com.example.postmanandwomen.dto.PostListResponseDto;
-import com.example.postmanandwomen.dto.PostRequestDto;
-import com.example.postmanandwomen.dto.PostResponseDto;
+import com.example.postmanandwomen.dto.*;
 import com.example.postmanandwomen.entity.Account;
+import com.example.postmanandwomen.entity.Comment;
 import com.example.postmanandwomen.entity.Post;
+import com.example.postmanandwomen.repository.CommentRepository;
+import com.example.postmanandwomen.repository.LikesRepository;
 import com.example.postmanandwomen.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class PostService {
     private final PostRepository postRepository;
+    private final LikesRepository likesRepository;
+    private final CommentRepository commentRepository;
 
     // 글 생성 (user 매핑)
     public PostResponseDto createPost(Account account, PostRequestDto requestDto) {
@@ -30,12 +34,16 @@ public class PostService {
     }
 
     // 글 하나 가져오기
-    public PostResponseDto findOnePost(Long id) {
+    public ResponseDto findOnePost(Long id) {
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("게시글이 없습니다")
         );
-        return null;
-//        return new PostResponseDto(post);
+        Long likeNum = Long.valueOf(likesRepository.findAllByPost(post).size());
+        List<Comment> commentList = commentRepository.findAllByPost(post);
+        List<CommentResponseDto> responseDtoList = commentList.stream().map(CommentResponseDto::new).collect(Collectors.toList());
+
+        PostListResponseDto response = new PostListResponseDto(post, likeNum, responseDtoList);
+        return ResponseDto.success(response);
     }
 
     // 글 수정

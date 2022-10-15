@@ -1,11 +1,16 @@
 package com.example.postmanandwomen.dto;
 
 import com.example.postmanandwomen.entity.Likes;
+import lombok.AllArgsConstructor;
 
+@AllArgsConstructor
 public class LikesResponseDto {
-    private String email;
+    private Long postId;
 
-    public LikesResponseDto (Likes likes) {
-        this.email = likes.getAccount().getEmail();
+    private String postTitle;
+
+    public LikesResponseDto(Likes likes) {
+        this.postId = likes.getPost().getId();
+        this.postTitle = likes.getPost().getTitle();
     }
 }
