@@ -17,7 +17,7 @@ public class PostController {
     private final PostService postService;
 
     // 글 등록
-    @PostMapping("/post")
+    @PostMapping("/auth/post")
     public PostResponseDto createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PostRequestDto requestDto) {
         return postService.createPost(userDetails.getAccount(), requestDto);
     }

@@ -20,18 +20,13 @@ public class PostResponseDto {
 
     private String username;
 
-    public PostResponseDto(Account account, Post post) {
-        this.username = account.getUsername();
-        this.username = account.getUsername();
+    public PostResponseDto(Post post) {
+        this.username = post.getAccount().getUsername();
         this.title = post.getTitle();
         this.content = post.getContent();
         this.createdAt = post.getCreatedAt();
-        this.modifiedAt = post.getCreatedAt();
+        this.modifiedAt = post.getModifiedAt();
     }
 
-    public PostResponseDto(Post post) {
-        this.title = post.getTitle();
-        this.content = post.getContent();
-        this.createdAt = post.getCreatedAt();
-    }
+
 }

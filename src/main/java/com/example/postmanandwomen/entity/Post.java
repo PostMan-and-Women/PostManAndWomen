@@ -28,9 +28,6 @@ public class Post extends TimeStamped {
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false)
-    private String email;
-
     @ManyToOne
     @JoinColumn(name = "accountId")
     private Account account;
@@ -43,7 +40,6 @@ public class Post extends TimeStamped {
         this.title = requestDto.getTitle();
         this.content = requestDto.getContent();
         this.account = account;
-        this.email = account.getEmail();
     }
     // 업데이트 메소드
     public void update(PostRequestDto requestDto) {
