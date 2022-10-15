@@ -3,6 +3,7 @@ package com.example.postmanandwomen.service;
 import com.example.postmanandwomen.dto.*;
 import com.example.postmanandwomen.entity.Account;
 import com.example.postmanandwomen.entity.Comment;
+import com.example.postmanandwomen.entity.Likes;
 import com.example.postmanandwomen.entity.Post;
 import com.example.postmanandwomen.repository.CommentRepository;
 import com.example.postmanandwomen.repository.LikesRepository;
@@ -11,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import javax.xml.ws.Response;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,15 +25,23 @@ public class PostService {
     private final CommentRepository commentRepository;
 
     // 글 생성 (user 매핑)
-    public PostResponseDto createPost(Account account, PostRequestDto requestDto) {
+    public ResponseDto createPost(Account account, PostRequestDto requestDto) {
         Post post = new Post(account, requestDto);
         postRepository.save(post);
-        return new PostResponseDto(post);
+        PostResponseDto responseDto = new PostResponseDto(post);
+        return ResponseDto.success(responseDto);
     }
 
     // 글 목록 가져오기
-    public List<PostListResponseDto> findAllPosts() {
-        return postRepository.findAllByOrderByModifiedAtDesc();
+    public ResponseDto findAllPosts() {
+        List<Post> posts = postRepository.findAllByOrderByModifiedAtDesc();
+        List<PostListResponseDto> postList = new ArrayList<>();
+        for (Post post: posts) {
+            Long likeNum = Long.valueOf(likesRepository.findAllByPost(post).size());
+            Long commentNum = Long.valueOf(commentRepository.findAllByPost(post).size());
+            postList.add(new PostListResponseDto(post, likeNum, commentNum));
+        }
+        return ResponseDto.success(postList);
     }
 
     // 글 하나 가져오기
@@ -42,22 +53,22 @@ public class PostService {
         List<Comment> commentList = commentRepository.findAllByPost(post);
         List<CommentResponseDto> responseDtoList = commentList.stream().map(CommentResponseDto::new).collect(Collectors.toList());
 
-        PostListResponseDto response = new PostListResponseDto(post, likeNum, responseDtoList);
+        PostOneResponseDto response = new PostOneResponseDto(post, likeNum, responseDtoList);
         return ResponseDto.success(response);
     }
 
     // 글 수정
     @Transactional
-    public Long updatePost(Account account, Long id, PostRequestDto requestDto) {
+    public ResponseDto updatePost(Account account, Long id, PostRequestDto requestDto) {
         // 어떤 게시판인지 찾기
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다.")
         );
 
-        // 게시판의 username과 로그인 유저의 username 비교
-        if (account.getUsername().equals(post.getAccount().getUsername())) {
+        // 게시판의 유저와 로그인 유저 비교
+        if (account.getEmail().equals(post.getAccount().getEmail())) {
             post.update(requestDto);
-            return post.getId();
+            return ResponseDto.success(post);
         } else {
             throw new IllegalArgumentException("작성자만 수정할 수 있습니다");
         }
@@ -65,7 +76,7 @@ public class PostService {
 
     // 삭제
     @Transactional
-    public Long deletePost(Account account, Long id) {
+    public ResponseDto deletePost(Account account, Long id) {
         // 어떤 게시판인지 찾기
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다.")
@@ -73,10 +84,15 @@ public class PostService {
 
         // 게시판의 email과 로그인 유저의 email 비교
         if (account.getEmail().equals(post.getAccount().getEmail())) {
+            // 게시판의 댓글도 삭제
+            List<Comment> comment = commentRepository.findAllByPost(post);
+            commentRepository.deleteAll(comment);
+            List<Likes> likes = likesRepository.findAllByPost(post);
+            likesRepository.deleteAll(likes);
             postRepository.deleteById(id);
-            return id;
+            return ResponseDto.success("삭제되었습니다");
         } else {
-            throw new IllegalArgumentException("작성자만 수정할 수 있습니다");
+            throw new IllegalArgumentException("작성자만 삭제할 수 있습니다");
         }
     }
 }
