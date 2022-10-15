@@ -4,6 +4,7 @@ package com.example.postmanandwomen.service;
 import com.example.postmanandwomen.dto.CommentRequestDto;
 import com.example.postmanandwomen.dto.CommentResponseDto;
 import com.example.postmanandwomen.dto.ResponseDto;
+import com.example.postmanandwomen.entity.Account;
 import com.example.postmanandwomen.entity.Comment;
 import com.example.postmanandwomen.entity.Post;
 import com.example.postmanandwomen.repository.CommentRepository;
@@ -24,20 +25,29 @@ public class CommentService {
     private final PostRepository postRepository;
 
     @Transactional
-    public ResponseDto registerComment(Long postId, CommentRequestDto CommentRequestDto) {
+    public ResponseDto registerComment(Long postId, CommentRequestDto CommentRequestDto, Account account) {
         String content = CommentRequestDto.getContent();
 
         Post findPost = postRepository.findById(postId).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 게시물입니다.")
         );
-        Comment savedComment = commentRepository.save(new Comment(postId, content)); // boardId,
+        Comment savedComment = commentRepository.save(new Comment(findPost, content, account));
+        CommentResponseDto commentResponseDto = new CommentResponseDto(savedComment);
 
-        return ResponseDto.success(savedComment);
+
+        return ResponseDto.success(commentResponseDto);
     }
 
     public ResponseDto findAllComments(Long postId) {
         List<Comment> findAllComment = commentRepository.findAllByPostId(postId);
         List<CommentResponseDto> comments = new ArrayList<>();
+
+        // 1, 2,, 3
+        // {
+        //    "success": true,
+        //    "data": [],
+        //    "error": null
+        // }
 
         for (Comment savedComment : findAllComment) {
             comments.add(new CommentResponseDto(savedComment));
