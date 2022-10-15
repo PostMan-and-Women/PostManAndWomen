@@ -29,11 +29,11 @@ public class LikesService {
 
         if(likes.isPresent()) {
             likesRepository.deleteById(likes.get().getId());
-            return ResponseDto.success("좋아요가 취소되었습니다");
+            return ResponseDto.success(post.getId() + "번 게시글에 좋아요가 취소되었습니다");
         } else{
             Likes userLike = new Likes(post,account);
             likesRepository.save(userLike);
-            return ResponseDto.success("좋아요가 등록되었습니다");
+            return ResponseDto.success(post.getId() + "번 게시글에 좋아요가 등록되었습니다");
         }
     }
 }

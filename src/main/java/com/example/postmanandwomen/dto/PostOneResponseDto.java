@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class PostListResponseDto {
+public class PostOneResponseDto {
     // 제목
     private String title;
 
@@ -24,14 +24,14 @@ public class PostListResponseDto {
 
     private Long likeNum;
 
-    private Long commentNum;
+    private List<CommentResponseDto> comments;
 
-    public PostListResponseDto(Post post, Long likeNum, Long commentNum) {
+    public PostOneResponseDto(Post post, Long likeNum, List<CommentResponseDto> commentList) {
         this.username = post.getAccount().getUsername();
         this.title = post.getTitle();
         this.createdAt = post.getModifiedAt();
         this.modifiedAt = post.getCreatedAt();
         this.likeNum = likeNum;
-        this.commentNum = commentNum;
+        this.comments = commentList;
     }
 }
