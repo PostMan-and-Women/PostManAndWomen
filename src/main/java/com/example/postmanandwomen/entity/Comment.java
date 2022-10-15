@@ -22,9 +22,13 @@ public class Comment extends TimeStamped {
 //    @Column(name = "cwriter")
     private String username;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "fk_board_id")
-//    private Post post;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_board_id")
+    private Post post;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_account_id")
+    private Account account;
 
     @Lob
     private String comment;

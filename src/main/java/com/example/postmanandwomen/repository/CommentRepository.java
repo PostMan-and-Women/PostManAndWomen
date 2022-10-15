@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
-    List<Comment> findAllByBoardId(Long postId);
+    List<Comment> findAllByPostId(Long postId);
     List<Comment> findAllByPost(Post post);
     List<Comment> findAllByAccount(Account account);
 }

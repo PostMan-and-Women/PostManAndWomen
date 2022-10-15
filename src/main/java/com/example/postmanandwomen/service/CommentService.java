@@ -1,10 +1,19 @@
 // CommentService.class
 package com.example.postmanandwomen.service;
 
+import com.example.postmanandwomen.dto.CommentRequestDto;
+import com.example.postmanandwomen.dto.CommentResponseDto;
+import com.example.postmanandwomen.dto.ResponseDto;
+import com.example.postmanandwomen.entity.Comment;
+import com.example.postmanandwomen.entity.Post;
 import com.example.postmanandwomen.repository.CommentRepository;
+import com.example.postmanandwomen.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -12,34 +21,30 @@ import org.springframework.transaction.annotation.Transactional;
 public class CommentService {
 
     private final CommentRepository commentRepository;
+    private final PostRepository postRepository;
 
-//    @Transactional
-//    public ResponseDto registerComment(Long boardId, CommentRequestDto CommentRequestDto) {
-//        String content = CommentRequestDto.getContent();
-//
-//        Post findPost = PostRepository.findById(boardId).orElseThrow(
-//                () -> new IllegalArgumentException("존재하지 않는 게시물입니다.")
-//        );
-//
-//        Comment savedComment = commentRepository.save(new Comment(boardId, content)); // boardId,
-//
-//        return ResponseDto.success(savedComment);
-//
-//    }
-//
-//
-//    public ResponseDto findAllComments(Long boardID) {
-//        List<Comment> findAllComment = commentRepository.findAllByBoardId(boardID);
-//        List<CommentResponseDto.CommentRegisterResponseDto> comments = new ArrayList<>();
-//
-//        for (Comment savedComment : findAllComment) {
-//            if(savedComment.getBoard().getId() == (boardID)) {
-//                comments.add(new CommentResponseDto.CommentRegisterResponseDto(savedComment));
-//            }
-//        }
-//        return comments;
-//    }
-//
+    @Transactional
+    public ResponseDto registerComment(Long postId, CommentRequestDto CommentRequestDto) {
+        String content = CommentRequestDto.getContent();
+
+        Post findPost = postRepository.findById(postId).orElseThrow(
+                () -> new IllegalArgumentException("존재하지 않는 게시물입니다.")
+        );
+        Comment savedComment = commentRepository.save(new Comment(postId, content)); // boardId,
+
+        return ResponseDto.success(savedComment);
+    }
+
+    public ResponseDto findAllComments(Long postId) {
+        List<Comment> findAllComment = commentRepository.findAllByPostId(postId);
+        List<CommentResponseDto> comments = new ArrayList<>();
+
+        for (Comment savedComment : findAllComment) {
+            comments.add(new CommentResponseDto(savedComment));
+        }
+        return ResponseDto.success(comments);
+    }
+
 //    @Transactional
 //    public ResponseDto removeComment(Long commentId) {
 //        Optional<Comment> findComment = commentRepository.findById(commentId);
