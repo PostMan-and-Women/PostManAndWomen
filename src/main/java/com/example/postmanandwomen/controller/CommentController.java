@@ -2,8 +2,10 @@ package com.example.postmanandwomen.controller;
 
 import com.example.postmanandwomen.dto.CommentRequestDto;
 import com.example.postmanandwomen.dto.ResponseDto;
+import com.example.postmanandwomen.security.user.UserDetailsImpl;
 import com.example.postmanandwomen.service.CommentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,12 +16,13 @@ public class CommentController {
 
     @PostMapping("/auth/comment/{id}")
     public ResponseDto postComment(@PathVariable Long id,
-                                   @RequestBody CommentRequestDto commentRequestDto) {
+                                   @RequestBody CommentRequestDto commentRequestDto,
+                                   @AuthenticationPrincipal UserDetailsImpl userDetails) {
         System.out.println("CommentController.postComment");
-        return commentService.registerComment(id, commentRequestDto);
+        return commentService.registerComment(id, commentRequestDto, userDetails.getAccount());
     }
 
-    @GetMapping("comment")
+    @GetMapping("/comment/{id}")
     public ResponseDto<?> getComments(@PathVariable Long id) {
         return commentService.findAllComments(id);
     }
