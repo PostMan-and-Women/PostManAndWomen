@@ -1,5 +1,7 @@
 package com.example.loginlivesession2.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -22,13 +24,18 @@ public class AccountRequestDto {
     @NotBlank
     @Column(unique = true)
 //    @Pattern(message = )
+
+    @NotBlank
     @Email
     private String email;
 
     // 에러처리 2
     // 비밀번호가 영어대소문자, 숫자, 특수문자를 모두 포함하지 않은 경우 + 8 ~ 16자리    @NotBlank
+    @NotBlank
     @Pattern(regexp = PASSWORD_REGEX)
     private String password;
+
+
 
     public AccountRequestDto(String email, String password, String username) {
         this.email = email;

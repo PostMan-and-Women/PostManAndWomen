@@ -1,5 +1,6 @@
 package com.example.loginlivesession2.dto;
 
+import com.example.loginlivesession2.entity.Comment;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,4 +19,10 @@ public class CommentResponseDto {
     private String comment;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
+
+    public CommentResponseDto(Comment comment) {
+        this.comment = comment.getComment();
+        this.createdAt = comment.getCreatedAt();
+        this.modifiedAt = comment.getCreatedAt();
+    }
 }
