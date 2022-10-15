@@ -21,7 +21,7 @@ public class PostService {
     public PostResponseDto createPost(Account account, PostRequestDto requestDto) {
         Post post = new Post(account, requestDto);
         postRepository.save(post);
-        return new PostResponseDto(account, post);
+        return new PostResponseDto(post);
     }
 
     // 글 목록 가져오기

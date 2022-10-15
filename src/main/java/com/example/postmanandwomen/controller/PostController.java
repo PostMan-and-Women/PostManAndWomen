@@ -3,6 +3,9 @@ package com.example.postmanandwomen.controller;
 import com.example.postmanandwomen.dto.PostListResponseDto;
 import com.example.postmanandwomen.dto.PostRequestDto;
 import com.example.postmanandwomen.dto.PostResponseDto;
+import com.example.postmanandwomen.entity.Account;
+import com.example.postmanandwomen.entity.Post;
+import com.example.postmanandwomen.repository.PostRepository;
 import com.example.postmanandwomen.security.user.UserDetailsImpl;
 import com.example.postmanandwomen.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -15,12 +18,13 @@ import java.util.List;
 @RestController
 public class PostController {
     private final PostService postService;
+    private final PostRepository postRepository;
 
-    // 글 등록
-    @PostMapping("/post")
+    @PostMapping("/auth/post")
     public PostResponseDto createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PostRequestDto requestDto) {
         return postService.createPost(userDetails.getAccount(), requestDto);
     }
+
     // 전체 목록 조회
     @GetMapping("/post")
     public List<PostListResponseDto> getAllPosts() {
