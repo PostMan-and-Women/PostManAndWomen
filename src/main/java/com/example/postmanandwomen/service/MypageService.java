@@ -1,20 +1,16 @@
 package com.example.postmanandwomen.service;// MypageService
 
 import com.example.postmanandwomen.dto.*;
-import com.example.postmanandwomen.entity.Likes;
-import com.example.postmanandwomen.entity.Account;
-import com.example.postmanandwomen.entity.Comment;
-import com.example.postmanandwomen.entity.Post;
-//import com.example.loginlivesession2.jwt.dto.MypageResponseDto;
+import com.example.postmanandwomen.entity.*;
+import com.example.postmanandwomen.jwt.dto.TokenDto;
 import com.example.postmanandwomen.jwt.util.JwtUtil;
-import com.example.postmanandwomen.repository.AccountRepository;
-import com.example.postmanandwomen.repository.CommentRepository;
-import com.example.postmanandwomen.repository.LikesRepository;
-import com.example.postmanandwomen.repository.PostRepository;
+import com.example.postmanandwomen.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,11 +19,11 @@ import java.util.stream.Collectors;
 public class MypageService {
 
     private final PostRepository postRepository;
-    private final AccountRepository accountRepository;
     private final CommentRepository commentRepository;
     private final LikesRepository likesRepository;
-    private JwtUtil jwtUtil;
-
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
     // 마이페이지 조회
     @Transactional(readOnly=true)
     public ResponseDto<?> getMypage(Account account){
@@ -47,8 +43,18 @@ public class MypageService {
     }
     //
     @Transactional
-    public ResponseDto<?> updateMypage(AccountRequestDto accountRequestDto, Account account){
-        return ResponseDto.success("수정 완료");
+    public ResponseDto<?> updateMypage(AccountRequestDto accountRequestDto, Account account, HttpServletResponse response){
+        if(!account.getEmail().equals(accountRequestDto.getEmail())){
+            TokenDto tokenDto = jwtUtil.createAllToken(accountRequestDto.getEmail());
+            RefreshToken refreshToken = new RefreshToken(tokenDto.getRefreshToken(), accountRequestDto.getEmail());
+            refreshTokenRepository.save(refreshToken);
+            response.addHeader(JwtUtil.ACCESS_TOKEN, tokenDto.getAccessToken());
+            response.addHeader(JwtUtil.REFRESH_TOKEN, tokenDto.getRefreshToken());
+        }
+        accountRequestDto.setEncodePwd(passwordEncoder.encode(accountRequestDto.getPassword()));
+        account.updateAccount(accountRequestDto);
+
+        return ResponseDto.success("수정 완료"); //AccountResponseDto로 바뀐 정보 보여주기
 
     }
 
@@ -67,6 +73,6 @@ public class MypageService {
         likesRepository.deleteAll(likesRepository.findAllByAccount(account));
         commentRepository.deleteAll(commentRepository.findAllByAccount(account));
         postRepository.deleteAll(postRepository.findAllByAccount(account));
-        return ResponseDto.success("post delete success");
+        return ResponseDto.success("회원 탈퇴 성공");
     }
 }

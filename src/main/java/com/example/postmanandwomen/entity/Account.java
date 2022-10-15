@@ -38,4 +38,10 @@ public class Account extends TimeStamped {
         this.password = accountRequestDto.getPassword();
         this.username = accountRequestDto.getUsername();
     }
+    // 회원 정보 수정
+    public void updateAccount(AccountRequestDto accountRequestDto){
+        this.email = accountRequestDto.getEmail();
+        this.password = accountRequestDto.getPassword();
+        this.username = accountRequestDto.getUsername();
+    }
 }
