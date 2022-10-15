@@ -19,6 +19,6 @@ public class LikesController {
     // 좋아요 기능
     @PostMapping("/auth/post/likes/{postId}")
     public ResponseDto<?> like(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody LikesRequestDto likesRequestDto, @PathVariable Long postId) {
-        return likesService.like(userDetails.getAccount(), likesRequestDto, postId);
+        return likesService.like(userDetails.getAccount(), postId);
     }
 }
