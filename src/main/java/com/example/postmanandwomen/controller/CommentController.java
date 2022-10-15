@@ -14,28 +14,28 @@ public class CommentController {
 
     private final CommentService commentService;
 
-    @PostMapping("/auth/comment/{id}")
-    public ResponseDto postComment(@PathVariable Long id,
+    @PostMapping("/auth/comment/{postId}")
+    public ResponseDto postComment(@PathVariable Long postId,
                                    @RequestBody CommentRequestDto commentRequestDto,
                                    @AuthenticationPrincipal UserDetailsImpl userDetails) {
         System.out.println("CommentController.postComment");
-        return commentService.registerComment(id, commentRequestDto, userDetails.getAccount());
+        return commentService.registerComment(postId, commentRequestDto, userDetails.getAccount());
     }
 
-    @GetMapping("/comment/{id}")
-    public ResponseDto<?> getComments(@PathVariable Long id) {
-        return commentService.findAllComments(id);
+    @GetMapping("/comment/{postId}")
+    public ResponseDto<?> getComments(@PathVariable Long postId) {
+        return commentService.findAllComments(postId);
     }
 
-//    @DeleteMapping("/auth/comment/{id}")
-//    public ResponseDto deleteComment(@PathVariable Long id) {
-//        return commentService.removeComment(id);
-//    }
-//
-//    @PatchMapping("/auth/comment/{id}")
-//    public ResponseDto editComment(@PathVariable Long id,
-//                                   @RequestBody CommentRequestDto commentRequestDto) {
-//        return commentService.modifyComment(id, commentRequestDto);
-//    }
+    @DeleteMapping("/auth/comment/{postId}/{commentId}")
+    public ResponseDto deleteComment(@PathVariable Long postId, @PathVariable Long commentId) {
+        return commentService.removeComment(postId, commentId);
+    }
+
+    @PatchMapping("/auth/comment/{postId}/{commentId}")
+    public ResponseDto editComment(@PathVariable Long postId, @PathVariable Long commentId,
+                                   @RequestBody CommentRequestDto commentRequestDto) {
+        return commentService.modifyComment(postId, commentId, commentRequestDto);
+    }
 
 }

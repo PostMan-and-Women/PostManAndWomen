@@ -61,24 +61,39 @@ public class CommentService {
         return ResponseDto.success(comments);
     }
 
-//    @Transactional
-//    public ResponseDto removeComment(Long commentId) {
-//        Optional<Comment> findComment = commentRepository.findById(commentId);
-//        commentRepository.delete(findComment.orElseThrow(
-//                () -> new IllegalArgumentException("존재하지 않는 댓글입니다.")
-//        ));
-//
-//        return findComment.get().getId();
-//    }
-//
-//    @Transactional
-//    public ResponseDto modifyComment(Long commentId, CommentRequestDto commentRequestDto) {
-//        Comment comment = commentRepository.findById(commentId).orElseThrow(
-//                () -> new IllegalArgumentException("존재하지 않는 댓글입니다.")
-//        );
-//        comment.updateComment(commentRegisterRequestDto.getContent());
-//
-//        return new CommentResponseDto.CommentRegisterResponseDto(comment);
-//    }
+    @Transactional
+    public ResponseDto removeComment(Long postId, Long commentId) {
+        Optional<Post> findPost = postRepository.findById(postId);
+        Optional<Comment> findComment = commentRepository.findById(commentId);
+
+        if(!findPost.isPresent()) {
+            return ResponseDto.fail(String.valueOf(HttpStatus.BAD_REQUEST), "Not existed Post");
+        }
+        if(!findComment.isPresent()) {
+            return ResponseDto.fail(String.valueOf(HttpStatus.BAD_REQUEST), "Not existed Comment");
+        }
+
+        commentRepository.deleteById(commentId);
+        return ResponseDto.success("삭제 완료");
+    }
+
+    @Transactional
+    public ResponseDto modifyComment(Long postId, Long commentId,
+                                     CommentRequestDto commentRequestDto) {
+        Optional<Post> findPost = postRepository.findById(postId);
+        Optional<Comment> findComment = commentRepository.findById(commentId);
+
+        if(!findPost.isPresent()) {
+            return ResponseDto.fail(String.valueOf(HttpStatus.BAD_REQUEST), "Not existed Post");
+        }
+        if(!(findComment.isPresent())) {
+            return ResponseDto.fail(String.valueOf(HttpStatus.BAD_REQUEST), "Not existed Comment");
+        }
+        Comment comment = findComment.get();
+        comment.updateComment(commentRequestDto.getContent());
+        commentRepository.save(comment);
+
+        return ResponseDto.success(findComment);
+    }
 
 }

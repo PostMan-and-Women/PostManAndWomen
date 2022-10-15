@@ -43,7 +43,7 @@ public class MypageService {
                         .build()
         );
     }
-    
+
     @Transactional
     public ResponseDto<?> updateMypage(AccountRequestDto accountRequestDto, Account account, HttpServletResponse response){
         if(!account.getEmail().equals(accountRequestDto.getEmail())){
