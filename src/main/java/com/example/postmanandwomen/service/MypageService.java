@@ -45,7 +45,6 @@ public class MypageService {
     @Transactional
     public ResponseDto<?> updateMypage(AccountRequestDto accountRequestDto, Account account, HttpServletResponse response){
         if(!account.getEmail().equals(accountRequestDto.getEmail())){
-            refreshTokenRepository.deleteAll(refreshTokenRepository.findByAccountEmail(account.getEmail()));
             TokenDto tokenDto = jwtUtil.createAllToken(accountRequestDto.getEmail());
             RefreshToken refreshToken = new RefreshToken(tokenDto.getRefreshToken(), accountRequestDto.getEmail());
             refreshTokenRepository.save(refreshToken);
