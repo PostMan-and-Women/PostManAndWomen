@@ -22,6 +22,7 @@ public class MypageService {
     private final CommentRepository commentRepository;
     private final LikesRepository likesRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final AccountRepository accountRepository;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
     // 마이페이지 조회
@@ -53,7 +54,7 @@ public class MypageService {
         }
         accountRequestDto.setEncodePwd(passwordEncoder.encode(accountRequestDto.getPassword()));
         account.updateAccount(accountRequestDto);
-
+        accountRepository.save(account);
         return ResponseDto.success("수정 완료"); //AccountResponseDto로 바뀐 정보 보여주기
 
     }
