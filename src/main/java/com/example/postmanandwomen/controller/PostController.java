@@ -3,6 +3,7 @@ package com.example.postmanandwomen.controller;
 import com.example.postmanandwomen.dto.PostListResponseDto;
 import com.example.postmanandwomen.dto.PostRequestDto;
 import com.example.postmanandwomen.dto.PostResponseDto;
+import com.example.postmanandwomen.dto.ResponseDto;
 import com.example.postmanandwomen.entity.Account;
 import com.example.postmanandwomen.entity.Post;
 import com.example.postmanandwomen.repository.PostRepository;
@@ -33,7 +34,7 @@ public class PostController {
 
     // 글 하나 조회
     @GetMapping("/post/{postId}")
-    public PostResponseDto getOnePost(@PathVariable Long postId) {
+    public ResponseDto getOnePost(@PathVariable Long postId) {
         return postService.findOnePost(postId);
     }
 

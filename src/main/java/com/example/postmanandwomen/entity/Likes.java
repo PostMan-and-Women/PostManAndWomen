@@ -22,4 +22,9 @@ public class Likes {
     @ManyToOne
     @JoinColumn(name = "accountId")
     private Account account;
+
+    public Likes(Post post, Account account) {
+        this.post = post;
+        this.account = account;
+    }
 }
