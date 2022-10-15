@@ -8,7 +8,6 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @NoArgsConstructor
 public class AccountReqDto {
-
     @NotBlank
     private String email;
     @NotBlank

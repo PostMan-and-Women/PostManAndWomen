@@ -43,7 +43,7 @@ public class MypageService {
                         .build()
         );
     }
-    //
+    
     @Transactional
     public ResponseDto<?> updateMypage(AccountRequestDto accountRequestDto, Account account, HttpServletResponse response){
         if(!account.getEmail().equals(accountRequestDto.getEmail())){
@@ -57,7 +57,6 @@ public class MypageService {
         account.updateAccount(accountRequestDto);
         accountRepository.save(account);
         return ResponseDto.success("수정 완료"); //AccountResponseDto로 바뀐 정보 보여주기
-
     }
 
 
