@@ -1,9 +1,11 @@
 package com.example.postmanandwomen.dto;
 
 import com.example.postmanandwomen.entity.Likes;
-import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
+@NoArgsConstructor
+@Getter
 public class LikesResponseDto {
     private Long postId;
 

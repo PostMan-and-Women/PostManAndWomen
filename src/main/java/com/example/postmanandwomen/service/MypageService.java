@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -74,6 +75,7 @@ public class MypageService {
         likesRepository.deleteAll(likesRepository.findAllByAccount(account));
         commentRepository.deleteAll(commentRepository.findAllByAccount(account));
         postRepository.deleteAll(postRepository.findAllByAccount(account));
+        accountRepository.delete(account);
         return ResponseDto.success("회원 탈퇴 성공");
     }
 }
