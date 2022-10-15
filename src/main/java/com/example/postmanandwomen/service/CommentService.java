@@ -10,11 +10,13 @@ import com.example.postmanandwomen.entity.Post;
 import com.example.postmanandwomen.repository.CommentRepository;
 import com.example.postmanandwomen.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,10 +30,15 @@ public class CommentService {
     public ResponseDto registerComment(Long postId, CommentRequestDto CommentRequestDto, Account account) {
         String content = CommentRequestDto.getContent();
 
-        Post findPost = postRepository.findById(postId).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 게시물입니다.")
-        );
-        Comment savedComment = commentRepository.save(new Comment(findPost, content, account));
+        /* findAllComments 에도 동일한 코드 */
+        /* 리펙토링 대상 */
+        Optional<Post> findPost = postRepository.findById(postId);
+
+        if(!findPost.isPresent()) {
+            return ResponseDto.fail(String.valueOf(HttpStatus.BAD_REQUEST), "Not existed post");
+        }
+
+        Comment savedComment = commentRepository.save(new Comment(findPost.get(), content, account));
         CommentResponseDto commentResponseDto = new CommentResponseDto(savedComment);
 
 
@@ -39,15 +46,14 @@ public class CommentService {
     }
 
     public ResponseDto findAllComments(Long postId) {
+        Optional<Post> findPost = postRepository.findById(postId);
+
+        if(!(findPost.isPresent())) {
+            return ResponseDto.fail(String.valueOf(HttpStatus.BAD_REQUEST), "Not existed post");
+        }
+
         List<Comment> findAllComment = commentRepository.findAllByPostId(postId);
         List<CommentResponseDto> comments = new ArrayList<>();
-
-        // 1, 2,, 3
-        // {
-        //    "success": true,
-        //    "data": [],
-        //    "error": null
-        // }
 
         for (Comment savedComment : findAllComment) {
             comments.add(new CommentResponseDto(savedComment));
