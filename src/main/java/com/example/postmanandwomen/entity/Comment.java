@@ -18,10 +18,6 @@ public class Comment extends TimeStamped {
 
     private Long id;
 
-    // Post가 있다면 필요할까??
-//    @Column(name = "cwriter")
-    private String username;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_board_id")
     private Post post;
@@ -33,9 +29,9 @@ public class Comment extends TimeStamped {
     @Lob
     private String comment;
 
-    public Comment(Long postId, String comment) {
+    public Comment(Post post, String comment, Account account) {
         this.comment = comment;
+        this.post = post;
+        this.account = account;
     }
-
-
 }
