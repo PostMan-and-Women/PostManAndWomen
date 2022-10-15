@@ -15,6 +15,7 @@ public class CommentController {
     @PostMapping("/auth/comment/{id}")
     public ResponseDto postComment(@PathVariable Long id,
                                    @RequestBody CommentRequestDto commentRequestDto) {
+        System.out.println("CommentController.postComment");
         return commentService.registerComment(id, commentRequestDto);
     }
 
