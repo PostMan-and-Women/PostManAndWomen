@@ -19,4 +19,5 @@ public class ResponseDto<T> {
         return new ResponseDto<>(false, null, new Error(httpStatus, message));
     }
 
+
 }
