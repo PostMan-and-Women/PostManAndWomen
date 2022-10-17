@@ -56,7 +56,12 @@ public class MypageService {
         accountRequestDto.setEncodePwd(passwordEncoder.encode(accountRequestDto.getPassword()));
         account.updateAccount(accountRequestDto);
         accountRepository.save(account);
-        return ResponseDto.success("수정 완료"); //AccountResponseDto로 바뀐 정보 보여주기
+        return ResponseDto.success(MypageResponseDto.MyInfo.builder()
+                .id(account.getId())
+                .username(account.getUsername())
+                .email(account.getEmail())
+                .build()
+        );
     }
 
 

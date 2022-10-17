@@ -26,7 +26,7 @@ public class PostService {
     private final CommentRepository commentRepository;
 
     // 글 생성 (user 매핑)
-    public ResponseDto createPost(Account account, PostRequestDto requestDto) {
+    public ResponseDto<?> createPost(Account account, PostRequestDto requestDto) {
         Post post = new Post(account, requestDto);
         postRepository.save(post);
         PostResponseDto responseDto = new PostResponseDto(post);
@@ -34,7 +34,7 @@ public class PostService {
     }
 
     // 글 목록 가져오기
-    public ResponseDto findAllPosts() {
+    public ResponseDto<?> findAllPosts() {
         List<Post> posts = postRepository.findAllByOrderByModifiedAtDesc();
         List<PostListResponseDto> postList = new ArrayList<>();
         for (Post post: posts) {
@@ -46,11 +46,11 @@ public class PostService {
     }
 
     // 글 하나 가져오기
-    public ResponseDto findOnePost(Long id) {
+    public ResponseDto<?> findOnePost(Long id) {
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new RequestException(HttpStatus.NOT_FOUND,"해당 게시글이 존재하지 않습니다.")
         );
-        Long likeNum = Long.valueOf(likesRepository.findAllByPost(post).size());
+        Long likeNum = (long) likesRepository.findAllByPost(post).size();
         List<Comment> commentList = commentRepository.findAllByPost(post);
         List<CommentResponseDto> responseDtoList = commentList.stream().map(CommentResponseDto::new).collect(Collectors.toList());
 
@@ -60,7 +60,7 @@ public class PostService {
 
     // 글 수정
     @Transactional
-    public ResponseDto updatePost(Account account, Long id, PostRequestDto requestDto) {
+    public ResponseDto<?> updatePost(Account account, Long id, PostRequestDto requestDto) {
         // 어떤 게시판인지 찾기
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new RequestException(HttpStatus.NOT_FOUND,"해당 게시글이 존재하지 않습니다.")
@@ -77,7 +77,7 @@ public class PostService {
 
     // 삭제
     @Transactional
-    public ResponseDto deletePost(Account account, Long id) {
+    public ResponseDto<?> deletePost(Account account, Long id) {
         // 어떤 게시판인지 찾기
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new RequestException(HttpStatus.NOT_FOUND,"해당 게시글이 존재하지 않습니다.")

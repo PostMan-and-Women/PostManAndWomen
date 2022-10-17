@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @NoArgsConstructor
@@ -18,9 +19,9 @@ public class PostListResponseDto {
     // 작성자명
     private String username;
 
-    private LocalDateTime createdAt;
+    private String createdAt;
 
-    private LocalDateTime modifiedAt;
+    private String modifiedAt;
 
     private Long likeNum;
 
@@ -29,8 +30,8 @@ public class PostListResponseDto {
     public PostListResponseDto(Post post, Long likeNum, Long commentNum) {
         this.username = post.getAccount().getUsername();
         this.title = post.getTitle();
-        this.createdAt = post.getModifiedAt();
-        this.modifiedAt = post.getCreatedAt();
+        this.createdAt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(post.getCreatedAt());
+        this.modifiedAt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(post.getModifiedAt());
         this.likeNum = likeNum;
         this.commentNum = commentNum;
     }

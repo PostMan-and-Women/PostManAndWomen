@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @NoArgsConstructor
 @Getter
@@ -14,9 +15,9 @@ public class PostResponseDto {
 
     private String content;
 
-    private LocalDateTime createdAt;
+    private String createdAt;
 
-    private LocalDateTime modifiedAt;
+    private String modifiedAt;
 
     private String username;
 
@@ -24,7 +25,7 @@ public class PostResponseDto {
         this.username = post.getAccount().getUsername();
         this.title = post.getTitle();
         this.content = post.getContent();
-        this.createdAt = post.getCreatedAt();
-        this.modifiedAt = post.getModifiedAt();
+        this.createdAt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(post.getCreatedAt());
+        this.modifiedAt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(post.getModifiedAt());
     }
 }

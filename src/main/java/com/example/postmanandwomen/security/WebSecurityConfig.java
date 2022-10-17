@@ -43,6 +43,7 @@ public class WebSecurityConfig {
                 .antMatchers("/account/**").permitAll()
                 .antMatchers("/post/**").permitAll()
                 .antMatchers("/comment/**").permitAll()
+                //.antMatchers("/swagger-ui/**").permitAll()
                 .anyRequest().authenticated()
                 .and().addFilterBefore(new JwtAuthFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
