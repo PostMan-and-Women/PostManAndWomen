@@ -93,7 +93,7 @@ public class CommentService {
         comment.updateComment(commentRequestDto.getContent());
         commentRepository.save(comment);
 
-        return ResponseDto.success(findComment);
+        return ResponseDto.success(new CommentResponseDto(findComment.get()));
     }
 
 }
