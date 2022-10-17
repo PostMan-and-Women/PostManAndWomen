@@ -23,14 +23,11 @@ public class Account extends TimeStamped {
     @Column(name = "account_id")
     private Long id;
 
-    @NotBlank
     @Column(unique = true)
     private String email;
 
-    @NotBlank
     private String username;
 
-    @NotBlank
     private String password;
 
     public Account(AccountRequestDto accountRequestDto) {

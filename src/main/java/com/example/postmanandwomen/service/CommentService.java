@@ -7,6 +7,7 @@ import com.example.postmanandwomen.dto.ResponseDto;
 import com.example.postmanandwomen.entity.Account;
 import com.example.postmanandwomen.entity.Comment;
 import com.example.postmanandwomen.entity.Post;
+import com.example.postmanandwomen.exception.RequestException;
 import com.example.postmanandwomen.repository.CommentRepository;
 import com.example.postmanandwomen.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,12 +36,11 @@ public class CommentService {
         Optional<Post> findPost = postRepository.findById(postId);
 
         if(!findPost.isPresent()) {
-            return ResponseDto.fail(String.valueOf(HttpStatus.BAD_REQUEST), "Not existed post");
+            return ResponseDto.fail(HttpStatus.BAD_REQUEST, "Not existed post");
         }
 
         Comment savedComment = commentRepository.save(new Comment(findPost.get(), content, account));
         CommentResponseDto commentResponseDto = new CommentResponseDto(savedComment);
-
 
         return ResponseDto.success(commentResponseDto);
     }
@@ -49,7 +49,7 @@ public class CommentService {
         Optional<Post> findPost = postRepository.findById(postId);
 
         if(!(findPost.isPresent())) {
-            return ResponseDto.fail(String.valueOf(HttpStatus.BAD_REQUEST), "Not existed post");
+            throw new RequestException(HttpStatus.BAD_REQUEST, "Not existed post");
         }
 
         List<Comment> findAllComment = commentRepository.findAllByPostId(postId);
@@ -67,10 +67,10 @@ public class CommentService {
         Optional<Comment> findComment = commentRepository.findById(commentId);
 
         if(!findPost.isPresent()) {
-            return ResponseDto.fail(String.valueOf(HttpStatus.BAD_REQUEST), "Not existed Post");
+            throw new RequestException(HttpStatus.BAD_REQUEST, "Not existed Post");
         }
         if(!findComment.isPresent()) {
-            return ResponseDto.fail(String.valueOf(HttpStatus.BAD_REQUEST), "Not existed Comment");
+            throw new RequestException(HttpStatus.BAD_REQUEST, "Not existed Comment");
         }
 
         commentRepository.deleteById(commentId);
@@ -84,10 +84,10 @@ public class CommentService {
         Optional<Comment> findComment = commentRepository.findById(commentId);
 
         if(!findPost.isPresent()) {
-            return ResponseDto.fail(String.valueOf(HttpStatus.BAD_REQUEST), "Not existed Post");
+            throw new RequestException(HttpStatus.BAD_REQUEST, "Not existed Post");
         }
         if(!(findComment.isPresent())) {
-            return ResponseDto.fail(String.valueOf(HttpStatus.BAD_REQUEST), "Not existed Comment");
+            throw new RequestException(HttpStatus.BAD_REQUEST, "Not existed Comment");
         }
         Comment comment = findComment.get();
         comment.updateComment(commentRequestDto.getContent());
