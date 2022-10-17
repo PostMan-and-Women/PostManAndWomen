@@ -1,5 +1,6 @@
 package com.example.postmanandwomen.security;
 
+import com.example.postmanandwomen.exception.AuthenticationEntryPointException;
 import com.example.postmanandwomen.jwt.filter.JwtAuthFilter;
 import com.example.postmanandwomen.jwt.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig {
 
     private final JwtUtil jwtUtil;
-
+    private final AuthenticationEntryPointException authenticationEntryPointException;
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -35,7 +36,9 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http.cors();
-        http.csrf().disable();
+        http.csrf().disable()
+                .exceptionHandling()
+                .authenticationEntryPoint(authenticationEntryPointException);
 
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 

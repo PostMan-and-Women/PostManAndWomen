@@ -37,13 +37,4 @@ public class RestApiExceptionHandler {
                 .body(errors);
     }
 
-    @ExceptionHandler(value = { UsernameNotFoundException.class })
-    public ResponseDto<Object> handleUsernameNotFoundException(UsernameNotFoundException e) {
-
-        return ResponseDto.fail(
-                HttpStatus.FORBIDDEN,
-                e.getMessage()
-        );
-    }
-
 }
