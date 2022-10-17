@@ -5,9 +5,11 @@ import com.example.postmanandwomen.dto.ResponseDto;
 import com.example.postmanandwomen.entity.Account;
 import com.example.postmanandwomen.entity.Likes;
 import com.example.postmanandwomen.entity.Post;
+import com.example.postmanandwomen.exception.RequestException;
 import com.example.postmanandwomen.repository.LikesRepository;
 import com.example.postmanandwomen.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -22,10 +24,12 @@ public class LikesService {
     @Transactional
     public ResponseDto like(Account account, Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(
-                () -> new IllegalArgumentException("게시글 정보가 존재하지 않습니다.")
+                () -> new RequestException(HttpStatus.NOT_FOUND,"해당 게시글이 존재하지 않습니다.")
         );
 
-        Optional<Likes> likes = likesRepository.findAllByPostAndAccount(post, account);
+        Optional<Likes> likes = Optional.ofNullable(likesRepository.findAllByPostAndAccount(post, account).orElseThrow(
+                () -> new RequestException(HttpStatus.NOT_FOUND, "회원이 존재하지 않습니다.")
+        ));
 
         if(likes.isPresent()) {
             likesRepository.deleteById(likes.get().getId());
