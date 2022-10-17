@@ -29,7 +29,17 @@ public class WebSecurityConfig {
 
     @Bean
     public WebSecurityCustomizer ignoringCustomizer() {
-        return (web) -> web.ignoring().antMatchers("/h2-console/**");
+        return (web) -> web.ignoring().antMatchers(
+                "/h2-console/**",
+                "/v2/api-docs",
+                "/configuration/ui",
+                "/swagger-resources/**",
+                "/v3/api-docs",
+                "/swagger-ui/**",
+                "/configuration/security",
+                "/swagger-ui.html",
+                "/webjars/**",
+                "/swagger/**");
     }
 
     @Bean
@@ -46,7 +56,6 @@ public class WebSecurityConfig {
                 .antMatchers("/account/**").permitAll()
                 .antMatchers("/post/**").permitAll()
                 .antMatchers("/comment/**").permitAll()
-                //.antMatchers("/swagger-ui/**").permitAll()
                 .anyRequest().authenticated()
                 .and().addFilterBefore(new JwtAuthFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
