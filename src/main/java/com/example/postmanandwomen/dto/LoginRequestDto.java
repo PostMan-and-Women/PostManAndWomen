@@ -9,14 +9,11 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @NoArgsConstructor
 public class LoginRequestDto {
-    @NotBlank
-    private String email;
-    @NotBlank
-    private String password;
 
-    public LoginRequestDto(String email, String password) {
-        this.email = email;
-        this.password = password;
-    }
+    @NotBlank(message = "Email은 공백일 수 없습니다.")
+    private String email;
+
+    @NotBlank(message = "Password는 공백일 수 없습니다.")
+    private String password;
 
 }
