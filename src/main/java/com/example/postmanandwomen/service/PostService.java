@@ -5,14 +5,15 @@ import com.example.postmanandwomen.entity.Account;
 import com.example.postmanandwomen.entity.Comment;
 import com.example.postmanandwomen.entity.Likes;
 import com.example.postmanandwomen.entity.Post;
+import com.example.postmanandwomen.exception.RequestException;
 import com.example.postmanandwomen.repository.CommentRepository;
 import com.example.postmanandwomen.repository.LikesRepository;
 import com.example.postmanandwomen.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import javax.xml.ws.Response;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,7 +48,7 @@ public class PostService {
     // 글 하나 가져오기
     public ResponseDto findOnePost(Long id) {
         Post post = postRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("게시글이 없습니다")
+                () -> new RequestException(HttpStatus.NOT_FOUND,"해당 게시글이 존재하지 않습니다.")
         );
         Long likeNum = Long.valueOf(likesRepository.findAllByPost(post).size());
         List<Comment> commentList = commentRepository.findAllByPost(post);
@@ -62,7 +63,7 @@ public class PostService {
     public ResponseDto updatePost(Account account, Long id, PostRequestDto requestDto) {
         // 어떤 게시판인지 찾기
         Post post = postRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다.")
+                () -> new RequestException(HttpStatus.NOT_FOUND,"해당 게시글이 존재하지 않습니다.")
         );
 
         // 게시판의 유저와 로그인 유저 비교
@@ -70,7 +71,7 @@ public class PostService {
             post.update(requestDto);
             return ResponseDto.success(post);
         } else {
-            throw new IllegalArgumentException("작성자만 수정할 수 있습니다");
+            throw new RequestException(HttpStatus.FORBIDDEN,"작성자만 수정할 수 있습니다");
         }
     }
 
@@ -79,7 +80,7 @@ public class PostService {
     public ResponseDto deletePost(Account account, Long id) {
         // 어떤 게시판인지 찾기
         Post post = postRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다.")
+                () -> new RequestException(HttpStatus.NOT_FOUND,"해당 게시글이 존재하지 않습니다.")
         );
 
         // 게시판의 email과 로그인 유저의 email 비교
@@ -92,7 +93,7 @@ public class PostService {
             postRepository.deleteById(id);
             return ResponseDto.success("삭제되었습니다");
         } else {
-            throw new IllegalArgumentException("작성자만 삭제할 수 있습니다");
+            throw new RequestException(HttpStatus.FORBIDDEN,"작성자만 삭제할 수 있습니다");
         }
     }
 }
