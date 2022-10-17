@@ -34,16 +34,19 @@ public class AccountService {
     public ResponseDto<?> signup(AccountRequestDto accountReqDto) {
 
         // email 중복 검사
-        if(accountRepository.findByEmail(accountReqDto.getEmail()).isPresent()){
-            throw new RequestException(HttpStatus.BAD_REQUEST, "Overlap Check"); // ex) return ResponseDto.fail()
-        }
-        System.out.println("AccountService.signup");
+        emailDuplicateCheck(accountReqDto);
 
         accountReqDto.setEncodePwd(passwordEncoder.encode(accountReqDto.getPassword()));
         Account account = new Account(accountReqDto);
 
         accountRepository.save(account);
         return ResponseDto.success("Success signup");
+    }
+
+    public void emailDuplicateCheck(AccountRequestDto accountReqDto) {
+        if(accountRepository.findByEmail(accountReqDto.getEmail()).isPresent()){
+            throw new RequestException(HttpStatus.BAD_REQUEST, "Overlap Check"); // ex) return ResponseDto.fail()
+        }
     }
 
     @Transactional

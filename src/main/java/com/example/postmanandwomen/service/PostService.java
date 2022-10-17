@@ -47,9 +47,7 @@ public class PostService {
 
     // 글 하나 가져오기
     public ResponseDto<?> findOnePost(Long id) {
-        Post post = postRepository.findById(id).orElseThrow(
-                () -> new RequestException(HttpStatus.NOT_FOUND,"해당 게시글이 존재하지 않습니다.")
-        );
+        Post post = postIdCheck(id);
         Long likeNum = (long) likesRepository.findAllByPost(post).size();
         List<Comment> commentList = commentRepository.findAllByPost(post);
         List<CommentResponseDto> responseDtoList = commentList.stream().map(CommentResponseDto::new).collect(Collectors.toList());
@@ -62,38 +60,46 @@ public class PostService {
     @Transactional
     public ResponseDto<?> updatePost(Account account, Long id, PostRequestDto requestDto) {
         // 어떤 게시판인지 찾기
-        Post post = postRepository.findById(id).orElseThrow(
-                () -> new RequestException(HttpStatus.NOT_FOUND,"해당 게시글이 존재하지 않습니다.")
-        );
+        Post post = postIdCheck(id);
 
-        // 게시판의 유저와 로그인 유저 비교
-        if (account.getEmail().equals(post.getAccount().getEmail())) {
-            post.update(requestDto);
-            return ResponseDto.success(new PostResponseDto(post));
-        } else {
-            throw new RequestException(HttpStatus.FORBIDDEN,"작성자만 수정할 수 있습니다");
-        }
+        // 게시판의 email과 로그인 유저의 email 비교
+        authorizationCheck(account, post);
+        post.update(requestDto);
+        postRepository.save(post);
+        return ResponseDto.success(new PostResponseDto(post));
+
     }
 
     // 삭제
     @Transactional
     public ResponseDto<?> deletePost(Account account, Long id) {
         // 어떤 게시판인지 찾기
+        Post post = postIdCheck(id);
+
+        // 게시판의 email과 로그인 유저의 email 비교
+        authorizationCheck(account, post);
+        // 게시판의 댓글도 삭제
+        List<Comment> comment = commentRepository.findAllByPost(post);
+        commentRepository.deleteAll(comment);
+        List<Likes> likes = likesRepository.findAllByPost(post);
+        likesRepository.deleteAll(likes);
+        postRepository.deleteById(id);
+        return ResponseDto.success("삭제되었습니다");
+    }
+
+    private static void authorizationCheck(Account account, Post post) {
+        if (!account.getEmail().equals(post.getAccount().getEmail())) {
+            throw new RequestException(HttpStatus.FORBIDDEN, "작성자만 수정 또는 삭제 할 수 있습니다");
+        }
+    }
+
+
+    public Post postIdCheck(Long id) {
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new RequestException(HttpStatus.NOT_FOUND,"해당 게시글이 존재하지 않습니다.")
         );
-
-        // 게시판의 email과 로그인 유저의 email 비교
-        if (account.getEmail().equals(post.getAccount().getEmail())) {
-            // 게시판의 댓글도 삭제
-            List<Comment> comment = commentRepository.findAllByPost(post);
-            commentRepository.deleteAll(comment);
-            List<Likes> likes = likesRepository.findAllByPost(post);
-            likesRepository.deleteAll(likes);
-            postRepository.deleteById(id);
-            return ResponseDto.success("삭제되었습니다");
-        } else {
-            throw new RequestException(HttpStatus.FORBIDDEN,"작성자만 삭제할 수 있습니다");
-        }
+        return post;
     }
+
+
 }

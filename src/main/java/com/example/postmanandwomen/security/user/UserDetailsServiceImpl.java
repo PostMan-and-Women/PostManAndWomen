@@ -17,10 +17,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final AccountRepository accountRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email){
 
         Account account = accountRepository.findByEmail(email).orElseThrow(
-                () -> new RequestException(HttpStatus.UNAUTHORIZED, "Account를 찾을 수 없습니다.")
+                () -> new UsernameNotFoundException("Account를 찾을 수 없습니다.")
         );
 
         UserDetailsImpl userDetails = new UserDetailsImpl(account);

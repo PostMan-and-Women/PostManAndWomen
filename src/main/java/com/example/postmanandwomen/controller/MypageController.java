@@ -22,7 +22,7 @@ public class MypageController {
 
     @GetMapping("")
     public ResponseDto<?> getMp(@AuthenticationPrincipal UserDetailsImpl userDetails){
-        return mypageService.getMypage(userDetails.getAccount());
+        return mypageService.getMyPage(userDetails.getAccount());
     }
 
     // 회원정보 수정
@@ -30,13 +30,13 @@ public class MypageController {
     public ResponseDto<?> updateMp(@Valid @RequestBody AccountRequestDto accountRequestDto,
                                    @AuthenticationPrincipal UserDetailsImpl userDetails,
                                    HttpServletResponse response){
-        return mypageService.updateMypage(accountRequestDto, userDetails.getAccount(),response);
+        return mypageService.updateMyPage(accountRequestDto, userDetails.getAccount(),response);
     }
 
     // 회원 탈퇴
     @DeleteMapping("")
     public ResponseDto<?> deleteMp(@AuthenticationPrincipal UserDetailsImpl userDetails){
-        return mypageService.deleteMypage(userDetails.getAccount());
+        return mypageService.deleteMyPage(userDetails.getAccount());
     }
 
 }

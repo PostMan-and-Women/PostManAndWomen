@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -26,9 +25,10 @@ public class MypageService {
     private final AccountRepository accountRepository;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
+    private final AccountService accountService;
     // 마이페이지 조회
     @Transactional(readOnly=true)
-    public ResponseDto<?> getMypage(Account account){
+    public ResponseDto<?> getMyPage(Account account){
         List<Post> postList = postRepository.findAllByAccount(account);
         List<Comment> commentList = commentRepository.findAllByAccount(account);
         List<Likes> likesList = likesRepository.findAllByAccount(account);
@@ -45,8 +45,9 @@ public class MypageService {
     }
 
     @Transactional
-    public ResponseDto<?> updateMypage(AccountRequestDto accountRequestDto, Account account, HttpServletResponse response){
+    public ResponseDto<?> updateMyPage(AccountRequestDto accountRequestDto, Account account, HttpServletResponse response){
         if(!account.getEmail().equals(accountRequestDto.getEmail())){
+            accountService.emailDuplicateCheck(accountRequestDto);
             TokenDto tokenDto = jwtUtil.createAllToken(accountRequestDto.getEmail());
             RefreshToken refreshToken = new RefreshToken(tokenDto.getRefreshToken(), accountRequestDto.getEmail());
             refreshTokenRepository.save(refreshToken);
@@ -68,7 +69,7 @@ public class MypageService {
     // 회원 탈퇴
 
     @Transactional
-    public ResponseDto<?> deleteMypage(Account account) {
+    public ResponseDto<?> deleteMyPage(Account account) {
         // post 삭제와 같은 함수 사용으로 대체
         List<Post> postList = postRepository.findAllByAccount(account);
         for (Post post : postList) {

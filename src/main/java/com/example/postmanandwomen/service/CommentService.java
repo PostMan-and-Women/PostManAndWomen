@@ -28,15 +28,15 @@ public class CommentService {
     private final PostRepository postRepository;
 
     @Transactional
-    public ResponseDto registerComment(Long postId, CommentRequestDto CommentRequestDto, Account account) {
+    public ResponseDto<?> registerComment(Long postId, CommentRequestDto CommentRequestDto, Account account) {
         String content = CommentRequestDto.getContent();
 
         /* findAllComments 에도 동일한 코드 */
         /* 리펙토링 대상 */
         Optional<Post> findPost = postRepository.findById(postId);
 
-        if(!findPost.isPresent()) {
-            return ResponseDto.fail(HttpStatus.BAD_REQUEST, "Not existed post");
+        if(findPost.isEmpty()) {
+            return ResponseDto.fail(HttpStatus.NOT_FOUND, "해당 댓글이 존재하지 않습니다.");
         }
 
         Comment savedComment = commentRepository.save(new Comment(findPost.get(), content, account));
@@ -45,12 +45,9 @@ public class CommentService {
         return ResponseDto.success(commentResponseDto);
     }
 
-    public ResponseDto findAllComments(Long postId) {
-        Optional<Post> findPost = postRepository.findById(postId);
+    public ResponseDto<?> findAllComments(Long postId) {
 
-        if(!(findPost.isPresent())) {
-            throw new RequestException(HttpStatus.BAD_REQUEST, "Not existed post");
-        }
+        postIdCheck(postId);
 
         List<Comment> findAllComment = commentRepository.findAllByPostId(postId);
         List<CommentResponseDto> comments = new ArrayList<>();
@@ -62,38 +59,41 @@ public class CommentService {
     }
 
     @Transactional
-    public ResponseDto removeComment(Long postId, Long commentId) {
-        Optional<Post> findPost = postRepository.findById(postId);
+    public ResponseDto<?> removeComment(Long postId, Long commentId) {
         Optional<Comment> findComment = commentRepository.findById(commentId);
 
-        if(!findPost.isPresent()) {
-            throw new RequestException(HttpStatus.BAD_REQUEST, "Not existed Post");
-        }
-        if(!findComment.isPresent()) {
-            throw new RequestException(HttpStatus.BAD_REQUEST, "Not existed Comment");
-        }
+        postIdCheck(postId);
+        commentIdCheck(findComment);
 
         commentRepository.deleteById(commentId);
         return ResponseDto.success("삭제 완료");
     }
 
     @Transactional
-    public ResponseDto modifyComment(Long postId, Long commentId,
+    public ResponseDto<?> modifyComment(Long postId, Long commentId,
                                      CommentRequestDto commentRequestDto) {
-        Optional<Post> findPost = postRepository.findById(postId);
         Optional<Comment> findComment = commentRepository.findById(commentId);
 
-        if(!findPost.isPresent()) {
-            throw new RequestException(HttpStatus.BAD_REQUEST, "Not existed Post");
-        }
-        if(!(findComment.isPresent())) {
-            throw new RequestException(HttpStatus.BAD_REQUEST, "Not existed Comment");
-        }
+        postIdCheck(postId);
+
+        commentIdCheck(findComment);
         Comment comment = findComment.get();
         comment.updateComment(commentRequestDto.getContent());
         commentRepository.save(comment);
 
         return ResponseDto.success(new CommentResponseDto(findComment.get()));
+    }
+
+    private void commentIdCheck(Optional<Comment> findComment) {
+        if(findComment.isEmpty()) {
+            throw new RequestException(HttpStatus.NOT_FOUND, "해당 댓글이 존재하지 않습니다.");
+        }
+    }
+
+    private void postIdCheck(Long id) {
+        postRepository.findById(id).orElseThrow(
+                () -> new RequestException(HttpStatus.NOT_FOUND,"해당 게시글이 존재하지 않습니다.")
+        );
     }
 
 }

@@ -4,6 +4,7 @@ import com.example.postmanandwomen.dto.Error;
 import com.example.postmanandwomen.dto.ResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,7 +24,7 @@ public class RestApiExceptionHandler {
         );
     }
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity handleValidationExceptions(MethodArgumentNotValidException exception) {
+    public ResponseEntity<Object> handleValidationExceptions(MethodArgumentNotValidException exception) {
 
         List<Error> errors = new ArrayList<>();
 
@@ -34,6 +35,15 @@ public class RestApiExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(errors);
+    }
+
+    @ExceptionHandler(value = { UsernameNotFoundException.class })
+    public ResponseDto<Object> handleUsernameNotFoundException(UsernameNotFoundException e) {
+
+        return ResponseDto.fail(
+                HttpStatus.FORBIDDEN,
+                e.getMessage()
+        );
     }
 
 }
