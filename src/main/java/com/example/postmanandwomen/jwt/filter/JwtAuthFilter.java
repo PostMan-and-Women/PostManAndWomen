@@ -31,13 +31,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         if(accessToken != null) {
             if(!jwtUtil.tokenValidation(accessToken)){
-                jwtExceptionHandler(response, "AccessToken Expired", HttpStatus.BAD_REQUEST);
+                jwtExceptionHandler(response, "AccessToken Expired", HttpStatus.UNAUTHORIZED);
                 return;
             }
             setAuthentication(jwtUtil.getEmailFromToken(accessToken));
         }else if(refreshToken != null) {
             if(!jwtUtil.refreshTokenValidation(refreshToken)){
-                jwtExceptionHandler(response, "RefreshToken Expired", HttpStatus.BAD_REQUEST);
+                jwtExceptionHandler(response, "RefreshToken Expired", HttpStatus.UNAUTHORIZED);
                 return;
             }
             setAuthentication(jwtUtil.getEmailFromToken(refreshToken));
@@ -55,7 +55,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         response.setStatus(status.value());
         response.setContentType("application/json");
         try {
-            String json = new ObjectMapper().writeValueAsString(ResponseDto.success(msg));
+            String json = new ObjectMapper().writeValueAsString(ResponseDto.fail(status,msg));
             response.getWriter().write(json);
         } catch (Exception e) {
             log.error(e.getMessage());

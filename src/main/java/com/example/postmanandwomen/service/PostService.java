@@ -38,8 +38,8 @@ public class PostService {
         List<Post> posts = postRepository.findAllByOrderByModifiedAtDesc();
         List<PostListResponseDto> postList = new ArrayList<>();
         for (Post post: posts) {
-            Long likeNum = Long.valueOf(likesRepository.findAllByPost(post).size());
-            Long commentNum = Long.valueOf(commentRepository.findAllByPost(post).size());
+            Long likeNum = (long) likesRepository.findAllByPost(post).size();
+            Long commentNum = (long) commentRepository.findAllByPost(post).size();
             postList.add(new PostListResponseDto(post, likeNum, commentNum));
         }
         return ResponseDto.success(postList);
@@ -69,7 +69,7 @@ public class PostService {
         // 게시판의 유저와 로그인 유저 비교
         if (account.getEmail().equals(post.getAccount().getEmail())) {
             post.update(requestDto);
-            return ResponseDto.success(post);
+            return ResponseDto.success(new PostResponseDto(post));
         } else {
             throw new RequestException(HttpStatus.FORBIDDEN,"작성자만 수정할 수 있습니다");
         }

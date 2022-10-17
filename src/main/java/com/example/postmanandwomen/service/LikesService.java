@@ -27,9 +27,7 @@ public class LikesService {
                 () -> new RequestException(HttpStatus.NOT_FOUND,"해당 게시글이 존재하지 않습니다.")
         );
 
-        Optional<Likes> likes = Optional.ofNullable(likesRepository.findAllByPostAndAccount(post, account).orElseThrow(
-                () -> new RequestException(HttpStatus.NOT_FOUND, "회원이 존재하지 않습니다.")
-        ));
+        Optional<Likes> likes = likesRepository.findAllByPostAndAccount(post, account);
 
         if(likes.isPresent()) {
             likesRepository.deleteById(likes.get().getId());

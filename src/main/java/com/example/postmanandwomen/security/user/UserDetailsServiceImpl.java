@@ -1,8 +1,10 @@
 package com.example.postmanandwomen.security.user;
 
 import com.example.postmanandwomen.entity.Account;
+import com.example.postmanandwomen.exception.RequestException;
 import com.example.postmanandwomen.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,7 +20,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
         Account account = accountRepository.findByEmail(email).orElseThrow(
-                () -> new RuntimeException("Not Found Account")
+                () -> new RequestException(HttpStatus.UNAUTHORIZED, "Account를 찾을 수 없습니다.")
         );
 
         UserDetailsImpl userDetails = new UserDetailsImpl(account);
