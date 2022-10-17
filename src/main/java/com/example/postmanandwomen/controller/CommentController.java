@@ -14,6 +14,9 @@ public class CommentController {
 
     private final CommentService commentService;
 
+    /**
+     * 댓글 작성
+     */
     @PostMapping("/auth/comment/{postId}")
     public ResponseDto postComment(@PathVariable Long postId,
                                    @RequestBody CommentRequestDto commentRequestDto,
@@ -22,16 +25,29 @@ public class CommentController {
         return commentService.registerComment(postId, commentRequestDto, userDetails.getAccount());
     }
 
+    /**
+     * 댓글 전체 조회
+     */
     @GetMapping("/comment/{postId}")
     public ResponseDto<?> getComments(@PathVariable Long postId) {
         return commentService.findAllComments(postId);
     }
 
+    /**
+     * 댓글 삭제
+     * @param postId
+     * @param commentId
+     */
     @DeleteMapping("/auth/comment/{postId}/{commentId}")
     public ResponseDto deleteComment(@PathVariable Long postId, @PathVariable Long commentId) {
         return commentService.removeComment(postId, commentId);
     }
 
+    /**
+     * 댓글 수정
+     * @param postId
+     * @param commentId
+     */
     @PatchMapping("/auth/comment/{postId}/{commentId}")
     public ResponseDto editComment(@PathVariable Long postId, @PathVariable Long commentId,
                                    @RequestBody CommentRequestDto commentRequestDto) {

@@ -1,4 +1,3 @@
-// Account.class
 package com.example.postmanandwomen.entity;
 
 import com.example.postmanandwomen.dto.AccountRequestDto;

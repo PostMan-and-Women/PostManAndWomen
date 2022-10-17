@@ -25,7 +25,7 @@ public class AccountRequestDto {
 
     // 에러처리 2
     // 비밀번호가 영어대소문자, 숫자, 특수문자를 모두 포함하지 않은 경우 + 8 ~ 16자리    @NotBlank
-    @Pattern(regexp = PASSWORD_REGEX,message = "패스워드는 무조건 영문, 숫자, 특수문자를 1글자 이상 포함해야 합니다.")
+    @Pattern(regexp = PASSWORD_REGEX, message = "패스워드는 무조건 영문, 숫자, 특수문자를 1글자 이상 포함해야 합니다.")
     @NotBlank(message = "Password는 공백일 수 없습니다.")
     private String password;
 

@@ -12,8 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
-public class AuthenticationEntryPointException implements
-        AuthenticationEntryPoint {
+public class AuthenticationEntryPointException implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
