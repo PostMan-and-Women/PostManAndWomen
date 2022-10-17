@@ -2,6 +2,7 @@ package com.example.postmanandwomen.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
@@ -14,8 +15,8 @@ public class ResponseDto<T> {
         return new ResponseDto<>(true, data, null);
     }
 
-    public static <T> ResponseDto<T> fail(String code, String message) {
-        return new ResponseDto<>(false, null, new Error(code, message));
+    public static <T> ResponseDto<T> fail(HttpStatus httpStatus, String message) {
+        return new ResponseDto<>(false, null, new Error(httpStatus, message));
     }
 
 }
