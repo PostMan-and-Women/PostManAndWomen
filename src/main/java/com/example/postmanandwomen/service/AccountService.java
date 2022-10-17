@@ -5,12 +5,14 @@ import com.example.postmanandwomen.dto.LoginRequestDto;
 import com.example.postmanandwomen.dto.ResponseDto;
 import com.example.postmanandwomen.entity.Account;
 import com.example.postmanandwomen.entity.RefreshToken;
+import com.example.postmanandwomen.exception.RequestException;
 import com.example.postmanandwomen.jwt.dto.TokenDto;
 import com.example.postmanandwomen.jwt.util.JwtUtil;
 import com.example.postmanandwomen.repository.AccountRepository;
 import com.example.postmanandwomen.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +35,7 @@ public class AccountService {
 
         // email 중복 검사
         if(accountRepository.findByEmail(accountReqDto.getEmail()).isPresent()){
-            throw new RuntimeException("Overlap Check"); // ex) return ResponseDto.fail()
+            throw new RequestException(HttpStatus.BAD_REQUEST, "Overlap Check"); // ex) return ResponseDto.fail()
         }
         System.out.println("AccountService.signup");
 
@@ -48,11 +50,11 @@ public class AccountService {
     public ResponseDto<?> login(LoginRequestDto loginReqDto, HttpServletResponse response) {
 
         Account account = accountRepository.findByEmail(loginReqDto.getEmail()).orElseThrow(
-                () -> new RuntimeException("Not found Account")
+                () -> new RequestException(HttpStatus.BAD_REQUEST, "Not found Account")
         );
 
         if(!passwordEncoder.matches(loginReqDto.getPassword(), account.getPassword())) {
-            throw new RuntimeException("Not matches Password");
+            throw new RequestException(HttpStatus.BAD_REQUEST, "Not matches Password");
         }
 
         TokenDto tokenDto = jwtUtil.createAllToken(loginReqDto.getEmail());
